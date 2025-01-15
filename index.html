@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commission Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: left;
+      color: #007BFF;
+      margin-top: 0px;
+    }
+
+    p {
+      line-height: 1.4em;
+      font-size: .9rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e7f3ff;
+      border-left: 5px solid #007BFF;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Commission Calculator</h1>
+    <p>This calculator determines the commission based on updated rules. For services costing ₹200 or less, a 20% customer charge is applied, while workers keep the entire service amount. For services costing over ₹200, a 10% worker commission is applied, maintaining a minimum margin of ₹40 by charging the customer if needed. For services costing ₹400 or more, only the worker commission is applied.</p>
+    <label for="serviceAmount">Service Amount (₹):</label>
+    <input type="number" id="serviceAmount" placeholder="Enter service amount" />
+    <button onclick="calculateCommission()">Calculate</button>
+    <div id="result" class="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    function calculateCommission() {
+      const serviceAmount = parseFloat(document.getElementById('serviceAmount').value);
+      const minimumMargin = 40;
+      const commissionRate = 0.1;
+      const customerChargeRate = 0.2;
+
+      if (isNaN(serviceAmount) || serviceAmount <= 0) {
+        alert('Please enter a valid service amount.');
+        return;
+      }
+
+      let workerCommission = 0;
+      let customerExtraCharge = 0;
+
+      if (serviceAmount <= 200) {
+        // Customer pays 20% charge, worker keeps full amount
+        customerExtraCharge = serviceAmount * customerChargeRate;
+      } else if (serviceAmount < 400) {
+        // Worker pays up to 10% commission, ensuring a minimum margin of ₹40
+        workerCommission = serviceAmount * commissionRate;
+
+        if (workerCommission < minimumMargin) {
+          customerExtraCharge = minimumMargin - workerCommission;
+        }
+      } else {
+        // For services costing ₹400 or more, only worker commission applies
+        workerCommission = serviceAmount * commissionRate;
+      }
+
+      const workerEarnings = serviceAmount - workerCommission;
+      const newServiceCost = serviceAmount + customerExtraCharge;
+
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('result').innerHTML = `
+        <p><strong>Worker Service Cost:</strong> ₹${serviceAmount.toFixed(2)}</p>
+        <p><strong>Commission to Hiroes:</strong> ₹${workerCommission.toFixed(2)}</p>
+        <p><strong>Worker Earnings:</strong> ₹${workerEarnings.toFixed(2)}</p>
+        <p><strong>Customer Pays Extra (if applicable):</strong> ₹${customerExtraCharge.toFixed(2)}</p>
+        <p><strong>Listing Cost to Customer:</strong> ₹${newServiceCost.toFixed(2)}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
